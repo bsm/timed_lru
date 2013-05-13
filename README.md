@@ -1,7 +1,7 @@
 Timed LRU
 =========
 
-[![Build Status](https://secure.travis-ci.org/bsm/timed_lru.png)](http://travis-ci.org/bsm/timed_lru)
+[![Build Status](https://travis-ci.org/bsm/timed_lru.png)](https://travis-ci.org/bsm/timed_lru)
 [![Dependency Status](https://gemnasium.com/bsm/timed_lru.png)](https://gemnasium.com/bsm/timed_lru)
 [![Coverage Status](https://coveralls.io/repos/bsm/timed_lru/badge.png)](https://coveralls.io/r/bsm/timed_lru)
 
