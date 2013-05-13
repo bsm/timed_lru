@@ -117,20 +117,3 @@ class TimedLRU
     end
 
 end
-
-      # right ?  : @tail = left
-
-      # return if node == @head
-      # if @head
-      #   @head.left  = node
-      #   @head.right = right if @head.right == node
-      # end
-
-      # if right
-      #   right.left = left
-      # end
-
-      # if @tail == node
-      #   left.right = nil
-      #   @tail = left
-      # end
