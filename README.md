@@ -14,37 +14,42 @@ Install
 
 Install it via `gem`:
 
-    gem install timed_lru
+```ruby
+gem install timed_lru
+```
 
 Or just bundle it with your project.
 
 Usage Example
 -------------
 
-    # Initialize with a max size (default: 100) and a TTL (default: none)
-    lru = TimedLRU.new max_size: 3, ttl: 5
+```ruby
+# Initialize with a max size (default: 100) and a TTL (default: none)
+lru = TimedLRU.new max_size: 3, ttl: 5
 
-    # Add values
-    lru["a"] = "value 1"
-    lru["b"] = "value 2"
-    lru["c"] = "value 3"
-    lru.keys # => ["a", "b"]
+# Add values
+lru["a"] = "value 1"
+lru["b"] = "value 2"
+lru["c"] = "value 3"
+lru.keys # => ["a", "b"]
 
-    # Wait a second
-    sleep(1)
+# Wait a second
+sleep(1)
 
-    # Add more values
-    lru["d"] = "value 4"
-    lru.keys # => ["b", "c", "d"]
+# Add more values
+lru["d"] = "value 4"
+lru.keys # => ["b", "c", "d"]
 
-    # Sleep a little longer
-    sleep(4)
-    lru["c"] # => "value 3"
-    lru.keys # => ["c", "d"]
+# Sleep a little longer
+sleep(4)
+lru["c"] # => "value 3"
+lru.keys # => ["c", "d"]
+```
 
 Licence
 -------
 
+```
 Copyright (c) 2013 Black Square Media Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining
@@ -65,3 +70,4 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
