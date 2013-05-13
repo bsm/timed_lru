@@ -1,6 +1,10 @@
 Timed LRU
 =========
 
+[![Build Status](https://secure.travis-ci.org/bsm/timed_lru.png)](http://travis-ci.org/bsm/timed_lru)
+[![Dependency Status](https://gemnasium.com/bsm/timed_lru.png)](https://gemnasium.com/bsm/timed_lru)
+[![Coverage Status](https://coveralls.io/repos/bsm/timed_lru/badge.png)](https://coveralls.io/r/bsm/timed_lru)
+
 My implementation of a simple, thread-safe LRU with (optional) TTLs
 and constant time operations. There are many LRUs for Ruby available but
 I was unable to find one that matches all three requirements.
