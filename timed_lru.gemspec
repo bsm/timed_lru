@@ -1,11 +1,10 @@
 Gem::Specification.new do |s|
-  s.required_ruby_version = '>= 1.9.1'
-  s.required_rubygems_version = ">= 1.8.0"
+  s.required_ruby_version = '>= 2.2.0'
 
   s.name        = File.basename(__FILE__, '.gemspec')
   s.summary     = "Timed LRU"
   s.description = "Thread-safe LRU implementation with (optional) TTL and constant time operations"
-  s.version     = "0.3.1"
+  s.version     = "0.3.2"
 
   s.authors     = ["Black Square Media"]
   s.email       = "info@blacksquaremedia.com"

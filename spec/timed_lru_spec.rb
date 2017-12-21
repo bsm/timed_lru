@@ -9,17 +9,17 @@ describe TimedLRU do
 
     res = [head]
     while curr = res.last.right
-      curr.left.should == res.last
+      expect(curr.left).to eq(res.last)
       res << curr
     end
-    head.left.should be_nil
-    tail.right.should be_nil
-    res.last.should == tail
+    expect(head.left).to be_nil
+    expect(tail.right).to be_nil
+    expect(res.last).to eq(tail)
     res
   end
 
   def chain
-    full_chain.map &:key
+    full_chain.map(&:key)
   end
 
   def head
@@ -33,61 +33,76 @@ describe TimedLRU do
   describe "defaults" do
     subject { described_class.new }
 
-    its(:max_size) { should be(100) }
-    its(:ttl)      { should be_nil }
-    it             { should be_a(MonitorMixin) }
-    it             { should_not be_a(described_class::ThreadUnsafe) }
-    it             { should respond_to(:empty?) }
-    it             { should respond_to(:keys) }
-    it             { should respond_to(:size) }
-    it             { should respond_to(:each_key) }
+    describe '#max_size' do
+      subject { super().max_size }
+      it { is_expected.to be(100) }
+    end
+
+    describe '#ttl' do
+      subject { super().ttl }
+      it { is_expected.to be_nil }
+    end
+
+    it { is_expected.to be_a(MonitorMixin) }
+    it { is_expected.not_to be_a(described_class::ThreadUnsafe) }
+    it { is_expected.to respond_to(:empty?) }
+    it { is_expected.to respond_to(:keys) }
+    it { is_expected.to respond_to(:size) }
+    it { is_expected.to respond_to(:each_key) }
   end
 
   describe "init" do
     subject { described_class.new max_size: 25, ttl: 120, thread_safe: false }
 
-    its(:max_size) { should be(25) }
-    its(:ttl)      { should be(120) }
-    it             { should be_a(described_class::ThreadUnsafe) }
+    describe '#max_size' do
+      subject { super().max_size }
+      it { is_expected.to be(25) }
+    end
+
+    describe '#ttl' do
+      subject { super().ttl }
+      it { is_expected.to be(120) }
+    end
+    it             { is_expected.to be_a(described_class::ThreadUnsafe) }
 
     it 'should assert correct option values' do
-      lambda { described_class.new(max_size: "X") }.should raise_error(ArgumentError)
-      lambda { described_class.new(max_size: -1) }.should raise_error(ArgumentError)
-      lambda { described_class.new(max_size: 0) }.should raise_error(ArgumentError)
+      expect { described_class.new(max_size: "X") }.to raise_error(ArgumentError)
+      expect { described_class.new(max_size: -1) }.to raise_error(ArgumentError)
+      expect { described_class.new(max_size: 0) }.to raise_error(ArgumentError)
 
-      lambda { described_class.new(ttl: "X") }.should raise_error(ArgumentError)
-      lambda { described_class.new(ttl: true) }.should raise_error(TypeError)
-      lambda { described_class.new(ttl: 0) }.should raise_error(ArgumentError)
+      expect { described_class.new(ttl: "X") }.to raise_error(ArgumentError)
+      expect { described_class.new(ttl: true) }.to raise_error(TypeError)
+      expect { described_class.new(ttl: 0) }.to raise_error(ArgumentError)
     end
   end
 
   describe "storing" do
 
     it "should set head + tail on first item" do
-      lambda {
-        subject.store("a", 1).should == 1
-      }.should change { chain }.from([]).to(["a"])
+      expect {
+        expect(subject.store("a", 1)).to eq(1)
+      }.to change { chain }.from([]).to(["a"])
     end
 
     it "should shift chain when new items are added" do
       subject["a"] = 1
-      lambda { subject["b"] = 2 }.should change { chain }.from(%w|a|).to(%w|b a|)
-      lambda { subject["c"] = 3 }.should change { chain }.to(%w|c b a|)
-      lambda { subject["d"] = 4 }.should change { chain }.to(%w|d c b a|)
+      expect { subject["b"] = 2 }.to change { chain }.from(%w|a|).to(%w|b a|)
+      expect { subject["c"] = 3 }.to change { chain }.to(%w|c b a|)
+      expect { subject["d"] = 4 }.to change { chain }.to(%w|d c b a|)
     end
 
     it "should expire LRU items when chain exceeds max size" do
       ("a".."d").each {|x| subject[x] = 1 }
-      lambda { subject["e"] = 5 }.should change { chain }.to(%w|e d c b|)
-      lambda { subject["f"] = 6 }.should change { chain }.to(%w|f e d c|)
+      expect { subject["e"] = 5 }.to change { chain }.to(%w|e d c b|)
+      expect { subject["f"] = 6 }.to change { chain }.to(%w|f e d c|)
     end
 
     it "should update items" do
       ("a".."d").each {|x| subject[x] = 1 }
-      lambda { subject["d"] = 2 }.should_not change { chain }
-      lambda { subject["c"] = 2 }.should change { chain }.to(%w|c d b a|)
-      lambda { subject["b"] = 2 }.should change { chain }.to(%w|b c d a|)
-      lambda { subject["a"] = 2 }.should change { chain }.to(%w|a b c d|)
+      expect { subject["d"] = 2 }.not_to change { chain }
+      expect { subject["c"] = 2 }.to change { chain }.to(%w|c d b a|)
+      expect { subject["b"] = 2 }.to change { chain }.to(%w|b c d a|)
+      expect { subject["a"] = 2 }.to change { chain }.to(%w|a b c d|)
     end
 
   end
@@ -95,19 +110,19 @@ describe TimedLRU do
   describe "retrieving" do
 
     it 'should fetch values' do
-      subject.fetch("a").should be_nil
-      subject["a"].should be_nil
+      expect(subject.fetch("a")).to be_nil
+      expect(subject["a"]).to be_nil
       subject["a"] = 1
-      subject["a"].should == 1
+      expect(subject["a"]).to eq(1)
     end
 
     it 'should renew membership on access' do
       ("a".."d").each {|x| subject[x] = 1 }
-      lambda { subject["d"] }.should_not change { chain }
-      lambda { subject["c"] }.should change { chain }.to(%w|c d b a|)
-      lambda { subject["b"] }.should change { chain }.to(%w|b c d a|)
-      lambda { subject["a"] }.should change { chain }.to(%w|a b c d|)
-      lambda { subject["x"] }.should_not change { chain }
+      expect { subject["d"] }.not_to change { chain }
+      expect { subject["c"] }.to change { chain }.to(%w|c d b a|)
+      expect { subject["b"] }.to change { chain }.to(%w|b c d a|)
+      expect { subject["a"] }.to change { chain }.to(%w|a b c d|)
+      expect { subject["x"] }.not_to change { chain }
     end
 
   end
@@ -115,18 +130,18 @@ describe TimedLRU do
   describe "deleting" do
 
     it 'should delete an return values' do
-      subject.delete("a").should be_nil
+      expect(subject.delete("a")).to be_nil
       subject["a"] = 1
-      subject.delete("a").should == 1
+      expect(subject.delete("a")).to eq(1)
     end
 
     it 'should re-arrange membership chain' do
       ("a".."d").each {|x| subject[x] = 1 }
-      lambda { subject.delete("x") }.should_not change { chain }
-      lambda { subject.delete("c") }.should change { chain }.to(%w|d b a|)
-      lambda { subject.delete("a") }.should change { chain }.to(%w|d b|)
-      lambda { subject.delete("d") }.should change { chain }.to(%w|b|)
-      lambda { subject.delete("b") }.should change { subject.size }.from(1).to(0)
+      expect { subject.delete("x") }.not_to change { chain }
+      expect { subject.delete("c") }.to change { chain }.to(%w|d b a|)
+      expect { subject.delete("a") }.to change { chain }.to(%w|d b|)
+      expect { subject.delete("d") }.to change { chain }.to(%w|b|)
+      expect { subject.delete("b") }.to change { subject.size }.from(1).to(0)
     end
 
   end
@@ -135,41 +150,41 @@ describe TimedLRU do
     subject    { described_class.new max_size: 4, ttl: 60 }
 
     def in_past(ago)
-      Time.stub now: (Time.now - ago)
+      allow(Time).to receive_messages now: (Time.now - ago)
       yield
     ensure
-      Time.unstub :now
+      allow(Time).to receive(:now).and_call_original
     end
 
     it 'should expire on access' do
       in_past(70) do
         subject["a"] = 1
-        chain.should == %w|a|
+        expect(chain).to eq(%w|a|)
       end
 
       in_past(50) do
         subject["b"] = 2
-        chain.should == %w|b a|
+        expect(chain).to eq(%w|b a|)
       end
 
       subject["c"] = 3
-      chain.should == %w|c b|
+      expect(chain).to eq(%w|c b|)
     end
 
     it 'should renew expiration on access' do
       in_past(70) do
         subject["a"] = 1
         subject["b"] = 2
-        chain.should == %w|b a|
+        expect(chain).to eq(%w|b a|)
       end
 
       in_past(50) do
-        subject["a"].should == 1
-        chain.should == %w|a b|
+        expect(subject["a"]).to eq(1)
+        expect(chain).to eq(%w|a b|)
       end
 
       subject["c"] = 3
-      chain.should == %w|c a|
+      expect(chain).to eq(%w|c a|)
     end
 
   end
