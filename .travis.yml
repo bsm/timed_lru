@@ -1,5 +1,5 @@
 language: ruby
-script: rake coverage
+script: bundle exec rake coverage
 rvm:
   - 2.2
   - 2.3
