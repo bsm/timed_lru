@@ -1,8 +1,6 @@
 language: ruby
-script: bundle exec rake coverage
 rvm:
-  - 2.2
-  - 2.3
   - 2.4
-gemfile:
-  - Gemfile
+  - 2.5
+  - 2.6
+cache: bundler
