@@ -28,7 +28,7 @@ class TimedLRU
   #   that extra bit of performance
   # @option opts [Integer] ttl
   #   the TTL in seconds
-  def initialize(opts={})
+  def initialize(opts = {})
     super() # MonitorMixin
 
     @hash     = {}

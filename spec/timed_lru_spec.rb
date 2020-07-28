@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe TimedLRU do
-
   subject { described_class.new max_size: 4 }
 
   def full_chain
@@ -80,7 +79,6 @@ describe TimedLRU do
   end
 
   describe 'storing' do
-
     it 'should set head + tail on first item' do
       expect do
         expect(subject.store('a', 1)).to eq(1)
@@ -107,11 +105,9 @@ describe TimedLRU do
       expect { subject['b'] = 2 }.to change { chain }.to(%w[b c d a])
       expect { subject['a'] = 2 }.to change { chain }.to(%w[a b c d])
     end
-
   end
 
   describe 'retrieving' do
-
     it 'should fetch values' do
       expect(subject.fetch('a')).to be_nil
       expect(subject['a']).to be_nil
@@ -127,11 +123,9 @@ describe TimedLRU do
       expect { subject['a'] }.to change { chain }.to(%w[a b c d])
       expect { subject['x'] }.not_to change { chain }
     end
-
   end
 
   describe 'deleting' do
-
     it 'should delete an return values' do
       expect(subject.delete('a')).to be_nil
       subject['a'] = 1
@@ -146,7 +140,6 @@ describe TimedLRU do
       expect { subject.delete('d') }.to change { chain }.to(%w[b])
       expect { subject.delete('b') }.to change { subject.size }.from(1).to(0)
     end
-
   end
 
   describe 'TTL expiration' do
@@ -189,7 +182,5 @@ describe TimedLRU do
       subject['c'] = 3
       expect(chain).to eq(%w[c a])
     end
-
   end
-
 end
