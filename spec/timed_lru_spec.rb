@@ -37,11 +37,13 @@ describe TimedLRU do
 
     describe '#max_size' do
       subject { super().max_size }
+
       it { is_expected.to be(100) }
     end
 
     describe '#ttl' do
       subject { super().ttl }
+
       it { is_expected.to be_nil }
     end
 
@@ -58,16 +60,19 @@ describe TimedLRU do
 
     describe '#max_size' do
       subject { super().max_size }
+
       it { is_expected.to be(25) }
     end
 
     describe '#ttl' do
       subject { super().ttl }
-      it { is_expected.to be(120) }
+
+      it { is_expected.to eq(120.0) }
     end
+
     it { is_expected.to be_a(described_class::ThreadUnsafe) }
 
-    it 'should assert correct option values' do
+    it 'asserts correct option values' do
       expect { described_class.new(max_size: 'X') }.to raise_error(ArgumentError)
       expect { described_class.new(max_size: -1) }.to raise_error(ArgumentError)
       expect { described_class.new(max_size: 0) }.to raise_error(ArgumentError)
@@ -79,26 +84,26 @@ describe TimedLRU do
   end
 
   describe 'storing' do
-    it 'should set head + tail on first item' do
+    it 'sets head + tail on first item' do
       expect do
         expect(subject.store('a', 1)).to eq(1)
       end.to change { chain }.from([]).to(['a'])
     end
 
-    it 'should shift chain when new items are added' do
+    it 'shifts chain when new items are added' do
       subject['a'] = 1
       expect { subject['b'] = 2 }.to change { chain }.from(%w[a]).to(%w[b a])
       expect { subject['c'] = 3 }.to change { chain }.to(%w[c b a])
       expect { subject['d'] = 4 }.to change { chain }.to(%w[d c b a])
     end
 
-    it 'should expire LRU items when chain exceeds max size' do
+    it 'expires LRU items when chain exceeds max size' do
       ('a'..'d').each {|x| subject[x] = 1 }
       expect { subject['e'] = 5 }.to change { chain }.to(%w[e d c b])
       expect { subject['f'] = 6 }.to change { chain }.to(%w[f e d c])
     end
 
-    it 'should update items' do
+    it 'updates items' do
       ('a'..'d').each {|x| subject[x] = 1 }
       expect { subject['d'] = 2 }.not_to change { chain }
       expect { subject['c'] = 2 }.to change { chain }.to(%w[c d b a])
@@ -108,14 +113,14 @@ describe TimedLRU do
   end
 
   describe 'retrieving' do
-    it 'should fetch values' do
+    it 'fetches values' do
       expect(subject.fetch('a')).to be_nil
       expect(subject['a']).to be_nil
       subject['a'] = 1
       expect(subject['a']).to eq(1)
     end
 
-    it 'should renew membership on access' do
+    it 'renews membership on access' do
       ('a'..'d').each {|x| subject[x] = 1 }
       expect { subject['d'] }.not_to change { chain }
       expect { subject['c'] }.to change { chain }.to(%w[c d b a])
@@ -126,19 +131,19 @@ describe TimedLRU do
   end
 
   describe 'deleting' do
-    it 'should delete an return values' do
+    it 'deletes an return values' do
       expect(subject.delete('a')).to be_nil
       subject['a'] = 1
       expect(subject.delete('a')).to eq(1)
     end
 
-    it 'should re-arrange membership chain' do
+    it 're-arranges membership chain' do
       ('a'..'d').each {|x| subject[x] = 1 }
       expect { subject.delete('x') }.not_to change { chain }
       expect { subject.delete('c') }.to change { chain }.to(%w[d b a])
       expect { subject.delete('a') }.to change { chain }.to(%w[d b])
       expect { subject.delete('d') }.to change { chain }.to(%w[b])
-      expect { subject.delete('b') }.to change { subject.size }.from(1).to(0)
+      expect { subject.delete('b') }.to change(subject, :size).from(1).to(0)
     end
   end
 
@@ -152,7 +157,7 @@ describe TimedLRU do
       allow(Time).to receive(:now).and_call_original
     end
 
-    it 'should expire on access' do
+    it 'expires on access' do
       in_past(70) do
         subject['a'] = 1
         expect(chain).to eq(%w[a])
@@ -167,7 +172,7 @@ describe TimedLRU do
       expect(chain).to eq(%w[c b])
     end
 
-    it 'should renew expiration on access' do
+    it 'renews expiration on access' do
       in_past(70) do
         subject['a'] = 1
         subject['b'] = 2

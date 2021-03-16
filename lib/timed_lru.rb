@@ -23,22 +23,22 @@ class TimedLRU
   # @param [Hash] opts options
   # @option opts [Integer] max_size
   #   maximum allowed number of items, defaults to 100
+  # @option opts [Integer,Float] ttl
+  #   the TTL in seconds
   # @option opts [Boolean] thread_safe
   #   true by default, set to false if you are not using threads a *really* need
   #   that extra bit of performance
-  # @option opts [Integer] ttl
-  #   the TTL in seconds
-  def initialize(opts = {})
+  def initialize(max_size: 100, ttl: nil, thread_safe: true)
     super() # MonitorMixin
 
     @hash     = {}
-    @max_size = Integer(opts[:max_size] || 100)
-    @ttl      = Integer(opts[:ttl]) if opts[:ttl]
+    @max_size = Integer(max_size)
+    @ttl      = Float(ttl) if ttl
 
     raise ArgumentError, 'Option :max_size must be > 0' unless max_size.positive?
     raise ArgumentError, 'Option :ttl must be > 0' unless ttl.nil? || ttl.positive?
 
-    extend ThreadUnsafe if opts[:thread_safe] == false
+    extend ThreadUnsafe if thread_safe == false
   end
 
   # Stores a `value` by `key`
@@ -84,8 +84,7 @@ class TimedLRU
 
   def compact!
     remove(@tail) while @hash.size > max_size
-
-    remove(@tail) while ttl && @tail.expires_at < Time.now.to_i
+    remove(@tail) while ttl && @tail.expires_at < Time.now.to_f
   end
 
   def remove(node)
@@ -98,7 +97,7 @@ class TimedLRU
   end
 
   def touch(node)
-    node.expires_at = Time.now.to_i + ttl if ttl
+    node.expires_at = Time.now.to_f + ttl if ttl
     return if node == @head
 
     left = node.left
