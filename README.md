@@ -1,6 +1,6 @@
 # Timed LRU
 
-[![Build Status](https://travis-ci.org/bsm/timed_lru.png)](https://travis-ci.org/bsm/timed_lru)
+[![Build Status](https://github.com/bsm/timed_lru/actions/workflows/ruby.yml/badge.svg)](https://github.com/bsm/timed_lru/actions/workflows/ruby.yml)
 [![Dependency Status](https://gemnasium.com/bsm/timed_lru.png)](https://gemnasium.com/bsm/timed_lru)
 
 My implementation of a simple, thread-safe LRU with (optional) TTLs
