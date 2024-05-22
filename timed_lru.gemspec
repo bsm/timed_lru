@@ -4,7 +4,7 @@ Gem::Specification.new do |s|
   s.name        = File.basename(__FILE__, '.gemspec')
   s.summary     = 'Timed LRU'
   s.description = 'Thread-safe LRU implementation with (optional) TTL and constant time operations'
-  s.version     = '0.5.1'
+  s.version     = '0.5.2'
 
   s.authors     = ['Black Square Media']
   s.email       = 'info@blacksquaremedia.com'
